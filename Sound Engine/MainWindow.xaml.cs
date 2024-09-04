@@ -34,8 +34,10 @@ namespace Sound_Engine
 			if (e.Key == Key.E)
 			{
 				using MemoryStream stream = new();
-				
-				SoundGenerator.Generate(stream);
+
+				SoundGenerator generator = new SoundGenerator();
+
+				generator.Generate(stream);
 
 				using SoundPlayer player = new(stream);
 				player.Play();
