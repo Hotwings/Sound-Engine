@@ -24,9 +24,10 @@ namespace Sound_Engine
 		{
 			InitializeComponent();
 
-			var line = new Line();
+			var path = new System.Windows.Shapes.Path();
 
-			myGrid.Children.Add(line);
+
+			myGrid.Children.Add(path);
 
 			using MemoryStream stream = new();
 
