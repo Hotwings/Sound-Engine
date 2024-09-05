@@ -1,4 +1,6 @@
-﻿namespace Sound_Generator
+﻿using System.Diagnostics;
+
+namespace Sound_Generator
 {
 	public class SoundGenerator
 	{
@@ -14,7 +16,13 @@
 		public const int samplesPerSecond = 44100;
 		const short bitsPerSample = 16;
 
-		List<Sound> sounds = new List<Sound>();
+		public int Samples
+		{
+			get
+			{
+				return (int)(samplesPerSecond * TimeLength);
+			}
+		}
 
 		public double TimeLength
 		{
@@ -23,6 +31,8 @@
 				return sounds.Max(x => x.StartTime + x.Durration);
 			}
 		}
+
+		private readonly List<Sound> sounds = [];
 
 
 		public SoundGenerator()
@@ -33,14 +43,35 @@
 			sounds.Add(new Sound(WaveType.Sine, 186, 7, 3, 1000));
 		}
 
-		public void Generate(Stream stream)
+		public short GetAmplitudeForSample(int sample)
+		{
+			return (short)sounds.Sum(x => x.Generate(sample)); ;
+		}
+
+		public async Task<short[]> GenerateWaveForm()
+		{
+			short[] ret = new short[Samples];
+			List<Task> tasks = [];
+
+			for (int i = 0; i < Samples; i++)
+			{
+				tasks.Add(Task.Factory.StartNew((object? sample) =>
+				{
+					ret[(int)sample] = GetAmplitudeForSample((int)sample);
+				}, state: i));
+
+			}
+			await Task.WhenAll(tasks);
+			return ret;
+		}
+
+		public async Task GenerateWav(Stream stream, short[]? waveForm = null)
 		{
 			using BinaryWriter writer = new(stream, System.Text.Encoding.UTF8, true);
 
 			short frameSize = channels * ((bitsPerSample + 7) / 8);
 			int bytesPerSecond = samplesPerSecond * frameSize;
-			int samples = (int)(samplesPerSecond * TimeLength);
-			int dataChunkSize = samples * frameSize;
+			int dataChunkSize = Samples * frameSize;
 			int fileSize = waveSize + headerSize + formatChunkSize + headerSize + dataChunkSize;
 
 
@@ -58,11 +89,12 @@
 			writer.Write(DATA);
 			writer.Write(dataChunkSize);
 
-			for (int i = 0; i < samples; i++)
+			foreach (short value in waveForm ?? await GenerateWaveForm())
 			{
-				short yValue = (short)sounds.Sum(x => x.Generate(i));
-				writer.Write(yValue);
+				writer.Write(value);
 			}
+
+
 
 			//writer.Close();
 			stream.Position = 0;

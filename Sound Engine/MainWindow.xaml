@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Sound_Engine"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid x:Name="myGrid">
+    <Grid x:Name="myGrid" Margin="50">
 
     </Grid>
 </Window>
