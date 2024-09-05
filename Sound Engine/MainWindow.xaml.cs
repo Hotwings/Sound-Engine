@@ -21,6 +21,7 @@ namespace Sound_Engine
 	public partial class MainWindow : Window
 	{
 		private int graphYZoomLevel = 10;
+		private int graphXZoomLevel = 50;
 		SoundGenerator generator = new();
 		public MainWindow()
 		{
@@ -44,7 +45,7 @@ namespace Sound_Engine
 			DrawWaveForm();
 
 			generator.GenerateWavFile(stream);
-			FileStream fileStream = new FileStream("sound.wav", FileMode.Create);
+			FileStream fileStream = new("sound.wav", FileMode.Create);
 			stream.CopyTo(fileStream);
 			stream.Position = 0;
 
@@ -54,7 +55,7 @@ namespace Sound_Engine
 
 		private Point GetPointForGraph(short[] waveForm, int x)
 		{
-			return new Point(x, waveForm[x * 10] / graphYZoomLevel + 100);
+			return new Point(x, waveForm[x * graphXZoomLevel] / graphYZoomLevel + 100);
 		}
 
 		private void DrawWaveForm()
