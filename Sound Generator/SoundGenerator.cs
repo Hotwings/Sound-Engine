@@ -27,8 +27,10 @@
 
 		public SoundGenerator()
 		{
-			sounds.Add(new Sound(WaveType.Sine, 600, 0, 2, 1000));
-			sounds.Add(new Sound(WaveType.Sine, 700, 1, 2, 1000));
+			sounds.Add(new Sound(WaveType.Sine, 175, 0, 10, 1000));
+			sounds.Add(new Sound(WaveType.Sine, 179, 1, 9, 1000));
+			sounds.Add(new Sound(WaveType.Sine, 182, 4, 6, 1000));
+			sounds.Add(new Sound(WaveType.Sine, 186, 7, 3, 1000));
 		}
 
 		public void Generate(Stream stream)

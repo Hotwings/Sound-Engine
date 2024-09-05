@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sound Engine", "Sound Engine.csproj", "{B76EA8D0-B6DD-4027-8157-C7499E4F6655}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sound Engine", "Sound Engine/Sound Engine.csproj", "{B76EA8D0-B6DD-4027-8157-C7499E4F6655}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sound Generator", "..\Sound Generator\Sound Generator.csproj", "{88846518-F3C6-4D93-B03C-24EAC1B3E073}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sound Generator", "Sound Generator\Sound Generator.csproj", "{88846518-F3C6-4D93-B03C-24EAC1B3E073}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

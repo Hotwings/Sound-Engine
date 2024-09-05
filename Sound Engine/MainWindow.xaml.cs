@@ -24,24 +24,25 @@ namespace Sound_Engine
 		{
 			InitializeComponent();
 
+			var line = new Line();
 
+			myGrid.Children.Add(line);
+
+			using MemoryStream stream = new();
+
+			SoundGenerator generator = new SoundGenerator();
+
+			generator.Generate(stream);
+			FileStream fileStream = new FileStream("sound.wav",FileMode.Create);
+			stream.CopyTo(fileStream);
+			stream.Position = 0;
+
+			using SoundPlayer player = new(stream);
+			player.Play();
 
 
 		}
 
-		protected override void OnKeyDown(KeyEventArgs e)
-		{
-			if (e.Key == Key.E)
-			{
-				using MemoryStream stream = new();
-
-				SoundGenerator generator = new SoundGenerator();
-
-				generator.Generate(stream);
-
-				using SoundPlayer player = new(stream);
-				player.Play();
-			}
-		}
+		
 	}
 }
