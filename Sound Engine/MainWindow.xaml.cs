@@ -20,6 +20,8 @@ namespace Sound_Engine
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private int graphYZoomLevel = 10;
+		SoundGenerator generator = new();
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -36,13 +38,12 @@ namespace Sound_Engine
 
 			using MemoryStream stream = new();
 
-			SoundGenerator generator = new();
 
-			short[] waveForm = await generator.GenerateWaveForm();
+			await generator.GenerateWaveForm();
 
-			DrawWaveForm(waveForm);
+			DrawWaveForm();
 
-			await generator.GenerateWav(stream);
+			generator.GenerateWavFile(stream);
 			FileStream fileStream = new FileStream("sound.wav", FileMode.Create);
 			stream.CopyTo(fileStream);
 			stream.Position = 0;
@@ -51,14 +52,14 @@ namespace Sound_Engine
 			player.Play();
 		}
 
-		private Point GetPoint(short[] waveForm, int x)
+		private Point GetPointForGraph(short[] waveForm, int x)
 		{
-			return new Point(x, waveForm[x * 10] / 10 + 100);
+			return new Point(x, waveForm[x * 10] / graphYZoomLevel + 100);
 		}
 
-		private void DrawWaveForm(short[] waveForm)
+		private void DrawWaveForm()
 		{
-
+			graphContainer.Children.Clear();
 			System.Windows.Shapes.Path path = new System.Windows.Shapes.Path
 			{
 				Stroke = Brushes.Black,
@@ -68,14 +69,14 @@ namespace Sound_Engine
 			PathFigure myPathFigure = new()
 			{
 				// Set the starting point for the PathFigure.
-				StartPoint = GetPoint(waveForm, 0)
+				StartPoint = GetPointForGraph(generator.WaveForm, 0)
 			};
 
 
 			PointCollection points = [];
 			for (int i = 1; i < 500; i++)
 			{
-				points.Add(GetPoint(waveForm,i));
+				points.Add(GetPointForGraph(generator.WaveForm, i));
 			}
 
 			PolyBezierSegment segment = new()
@@ -95,8 +96,15 @@ namespace Sound_Engine
 			};
 
 			path.Data = myPathGeometry;
-			myGrid.Children.Add(path);
+			graphContainer.Children.Add(path);
 		}
 
+
+		private void ZoomGraphY(object sender, RoutedEventArgs e)
+		{
+			graphYZoomLevel += (((Button)sender).Content.ToString() == "+") ? 1 : -1;
+
+			DrawWaveForm();
+		}
 	}
 }

@@ -16,6 +16,8 @@ namespace Sound_Generator
 		public const int samplesPerSecond = 44100;
 		const short bitsPerSample = 16;
 
+		public short[] WaveForm { get; private set; }
+
 		public int Samples
 		{
 			get
@@ -38,9 +40,9 @@ namespace Sound_Generator
 		public SoundGenerator()
 		{
 			sounds.Add(new Sound(WaveType.Sine, 175, 0, 10, 1000));
-			sounds.Add(new Sound(WaveType.Sine, 179, 1, 9, 1000));
-			sounds.Add(new Sound(WaveType.Sine, 182, 4, 6, 1000));
-			sounds.Add(new Sound(WaveType.Sine, 186, 7, 3, 1000));
+			sounds.Add(new Sound(WaveType.Sine, 179, 0, 10, 1000));
+			sounds.Add(new Sound(WaveType.Sine, 182, 0, 10, 1000));
+			sounds.Add(new Sound(WaveType.Sine, 186, 0, 10, 1000));
 		}
 
 		public short GetAmplitudeForSample(int sample)
@@ -48,24 +50,23 @@ namespace Sound_Generator
 			return (short)sounds.Sum(x => x.Generate(sample)); ;
 		}
 
-		public async Task<short[]> GenerateWaveForm()
+		public async Task GenerateWaveForm()
 		{
-			short[] ret = new short[Samples];
+			WaveForm = new short[Samples];
 			List<Task> tasks = [];
 
 			for (int i = 0; i < Samples; i++)
 			{
 				tasks.Add(Task.Factory.StartNew((object? sample) =>
 				{
-					ret[(int)sample] = GetAmplitudeForSample((int)sample);
+					WaveForm[(int)sample] = GetAmplitudeForSample((int)sample);
 				}, state: i));
 
 			}
 			await Task.WhenAll(tasks);
-			return ret;
 		}
 
-		public async Task GenerateWav(Stream stream, short[]? waveForm = null)
+		public void GenerateWavFile(Stream stream)
 		{
 			using BinaryWriter writer = new(stream, System.Text.Encoding.UTF8, true);
 
@@ -89,7 +90,7 @@ namespace Sound_Generator
 			writer.Write(DATA);
 			writer.Write(dataChunkSize);
 
-			foreach (short value in waveForm ?? await GenerateWaveForm())
+			foreach (short value in WaveForm)
 			{
 				writer.Write(value);
 			}
