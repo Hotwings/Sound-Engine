@@ -24,8 +24,9 @@ namespace Sound_Engine.Controls
 	{
 		public Sound sound { get; set; }
 
-		public SoundControl()
+		public SoundControl(Sound sound)
 		{
+			this.sound = sound;
 			InitializeComponent();
 
 
@@ -34,7 +35,15 @@ namespace Sound_Engine.Controls
 		private void AfterInit(object sender, RoutedEventArgs e)
 		{
 			if (sound != null)
+			{
 				texbox.Text = sound.Frequency.ToString();
+				FrequencySlider.Value = sound.Frequency;
+			}
+		}
+
+		private void FrequencySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		{
+			sound.Frequency = ((Slider)sender).Value;
 		}
 	}
 }

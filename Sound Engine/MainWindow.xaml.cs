@@ -1,4 +1,6 @@
-﻿using Sound_Generator;
+﻿using Sound_Engine.Controls;
+
+using Sound_Generator;
 using Sound_Generator.Sounds;
 
 using System.Collections.ObjectModel;
@@ -30,9 +32,6 @@ namespace Sound_Engine
 
 		SoundGenerator generator;
 
-		public ObservableCollection<Sound> Sounds { get; set; } = [];
-
-
 		public MainWindow()
 		{
 			generator = new();
@@ -41,10 +40,6 @@ namespace Sound_Engine
 			generator.sounds.Add(new SineWave(182, 0, 10, 1000));
 			generator.sounds.Add(new SineWave(186, 0, 10, 1000));
 
-			Sounds.Add(new SineWave(175, 0, 10, 1000));
-			Sounds.Add(new SineWave(179, 0, 10, 1000));
-			Sounds.Add(new SineWave(182, 0, 10, 1000));
-			Sounds.Add(new SineWave(186, 0, 10, 1000));
 
 			InitializeComponent();
 
@@ -62,7 +57,6 @@ namespace Sound_Engine
 
 
 			await generator.GenerateWaveForm();
-			SoundsContainer.ItemsSource = generator.sounds;
 
 			generator.GenerateWavFile(stream);
 			generator.SaveWavFile("Sound.wav");
@@ -73,6 +67,10 @@ namespace Sound_Engine
 		
 		private void AfterInitialized(object sender, RoutedEventArgs e)
 		{
+			foreach (var sound in generator.sounds)
+			{
+				SoundsContainer.Children.Add(new SoundControl(sound));
+			}
 
 			DrawWaveForm();
 		}
@@ -137,7 +135,7 @@ namespace Sound_Engine
 
 		private Point GetPointForGraph(short[] waveForm, int x)
 		{
-			return new Point(x, waveForm[x+graphScroll] / graphYZoomLevel + 150);
+			return new Point(x, waveForm[x+graphScroll] / graphYZoomLevel + 200);
 		}
 
 

@@ -5,24 +5,21 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:Sound_Engine"
 		xmlns:UserControls="clr-namespace:Sound_Engine.Controls"
-		xmlns:Sounds="clr-namespace:Sound_Generator.Sounds"
 		DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		mc:Ignorable="d"
-		Title="MainWindow" Height="450" Width="800" Loaded="AfterInitialized">
+		Title="MainWindow" Height="501" Width="812" Loaded="AfterInitialized">
 	<Grid>
-		<ListView x:Name="SoundsContainer" Margin="50,50,0,50" Width="268" HorizontalAlignment="Left" ItemsSource="{Binding Sounds}" >
-			<ListView.ItemTemplate>
-				<DataTemplate>
-					<UserControls:SoundControl />
-				</DataTemplate>
-			</ListView.ItemTemplate>
-		</ListView>
-		<Grid x:Name="graphContainer" Margin="350,50,50,50">
-		</Grid>
-		<Button Content="+" Margin="0,0,8,150" HorizontalAlignment="Right" Width="20" Click="ZoomGraphY" MinWidth="20" MinHeight="20" Height="20"/>
-		<Button Content="-" Margin="0,150,8,0" HorizontalAlignment="Right" Width="20" Click="ZoomGraphY" MinWidth="20" MinHeight="20" Height="20"/>
-		<Button Content="+" Margin="0,0,140,25" HorizontalAlignment="Right" Width="20" Click="ZoomGraphX" MinWidth="20" MinHeight="20" Height="20" VerticalAlignment="Bottom"/>
-		<Button Content="-" Margin="0,0,305,25" HorizontalAlignment="Right" Width="20" Click="ZoomGraphX" MinWidth="20" MinHeight="20" Height="20" VerticalAlignment="Bottom"/>
-		
+		<ScrollViewer Margin="50,50,0,50" Width="268" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto"  >
+			<StackPanel x:Name="SoundsContainer">
+
+			</StackPanel>
+		</ScrollViewer>
+		<Rectangle Margin="350,25,50,-1" VerticalAlignment="Top" Height="350" Stroke="Black"/>
+		<Grid x:Name="graphContainer" Margin="350,25,50,-1" VerticalAlignment="Top" Height="350"/>
+		<Button Content="+" Margin="0,150,8,0" HorizontalAlignment="Right" Width="20" Click="ZoomGraphY" MinWidth="20" MinHeight="20" Height="20" VerticalAlignment="Top"/>
+		<Button Content="-" Margin="0,300,8,0" HorizontalAlignment="Right" Width="20" Click="ZoomGraphY" MinWidth="20" MinHeight="20" Height="20" VerticalAlignment="Top"/>
+		<Button Content="+" Margin="0,400,140,-3" HorizontalAlignment="Right" Width="20" Click="ZoomGraphX" MinWidth="20" MinHeight="20" Height="20" VerticalAlignment="Top"/>
+		<Button Content="-" Margin="0,400,305,0" HorizontalAlignment="Right" Width="20" Click="ZoomGraphX" MinWidth="20" MinHeight="20" Height="20" VerticalAlignment="Top"/>
+
 	</Grid>
 </Window>
