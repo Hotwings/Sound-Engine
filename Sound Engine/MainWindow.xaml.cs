@@ -29,22 +29,19 @@ namespace Sound_Engine
 		private double graphXZoomLevel = 40;
 		private int graphScroll = 0;
 
-
+		SoundPlayer player;
 		SoundGenerator generator;
 
 		public MainWindow()
 		{
 			generator = new();
-			generator.sounds.Add(new SineWave(175, 0, 10, 1000));
-			generator.sounds.Add(new SineWave(179, 0, 10, 1000));
-			generator.sounds.Add(new SineWave(182, 0, 10, 1000));
-			generator.sounds.Add(new SineWave(186, 0, 10, 1000));
-
+			player = new();
+			generator.sounds.Add(new SineWave(175, 0, 1, 1000));
+			generator.sounds.Add(new SineWave(179, 0, 1, 1000));
+			generator.sounds.Add(new SineWave(182, 0, 1, 1000));
+			generator.sounds.Add(new SineWave(186, 0, 1, 1000));
 
 			InitializeComponent();
-
-			
-
 
 		}
 
@@ -59,17 +56,17 @@ namespace Sound_Engine
 			await generator.GenerateWaveForm();
 
 			generator.GenerateWavFile(stream);
-			generator.SaveWavFile("Sound.wav");
-
-			using SoundPlayer player = new(stream);
-			player.Play();
+			//generator.SaveWavFile("Sound.wav");
+			player.Stop();
+			player.Stream = stream;
+			player.PlayLooping();
 		}
-		
+
 		private void AfterInitialized(object sender, RoutedEventArgs e)
 		{
 			foreach (var sound in generator.sounds)
 			{
-				SoundsContainer.Children.Add(new SoundControl(sound));
+				SoundsContainer.Children.Add(new SoundControl(sound, RecreateWaveForm));
 			}
 
 			DrawWaveForm();
@@ -81,17 +78,35 @@ namespace Sound_Engine
 			DrawWaveForm();
 		}
 
-		protected override void OnMouseWheel(MouseWheelEventArgs e)
+
+		private async Task RecreateWaveForm()
 		{
-			graphScroll = Math.Max(0, graphScroll + e.Delta);
+			using MemoryStream stream = new();
+
+			await generator.GenerateWaveForm();
+
+			generator.GenerateWavFile(stream);
+			//generator.SaveWavFile("Sound.wav");
+			player.Stop();
+			player.Stream = stream;
+			player.PlayLooping();
+
 			DrawWaveForm();
 		}
 
 		#region Graph
 		private void DrawWaveForm()
 		{
+
 			graphContainer.Children.Clear();
-			System.Windows.Shapes.Path path = new System.Windows.Shapes.Path
+
+			PointCollection points = [];
+			for (int i = 1; i < graphContainer.ActualWidth * graphXZoomLevel; i++)
+			{
+				points.Add(GetPointForGraph(generator.WaveForm, i));
+			}
+
+			System.Windows.Shapes.Path path = new()
 			{
 				Stroke = Brushes.Black,
 				StrokeThickness = 1
@@ -102,13 +117,6 @@ namespace Sound_Engine
 				// Set the starting point for the PathFigure.
 				StartPoint = GetPointForGraph(generator.WaveForm, 0)
 			};
-
-
-			PointCollection points = [];
-			for (int i = 1; i < graphContainer.ActualWidth * graphXZoomLevel; i++)
-			{
-				points.Add(GetPointForGraph(generator.WaveForm, i));
-			}
 
 			PolyBezierSegment segment = new()
 			{
@@ -135,19 +143,26 @@ namespace Sound_Engine
 
 		private Point GetPointForGraph(short[] waveForm, int x)
 		{
-			return new Point(x, waveForm[x+graphScroll] / graphYZoomLevel + 200);
+			if (x + graphScroll >= waveForm.Length)
+				return new Point(x,200);
+			return new Point(x, waveForm[x + graphScroll] / graphYZoomLevel + 200);
 		}
 
+		protected override void OnMouseWheel(MouseWheelEventArgs e)
+		{
+			graphScroll = Math.Max(0, graphScroll + e.Delta);
+			DrawWaveForm();
+		}
 
 		private void ZoomGraphY(object sender, RoutedEventArgs e)
 		{
-			graphYZoomLevel += (((Button)sender).Content.ToString() == "-") ? 1 : -1;
+			graphYZoomLevel += (((Button)sender).Content.ToString() == "-") ? 2 : -2;
 
 			DrawWaveForm();
 		}
 		private void ZoomGraphX(object sender, RoutedEventArgs e)
 		{
-			graphXZoomLevel += (((Button)sender).Content.ToString() == "-") ? 1 : -1;
+			graphXZoomLevel += (((Button)sender).Content.ToString() == "-") ? 2 : -2;
 
 			DrawWaveForm();
 		}

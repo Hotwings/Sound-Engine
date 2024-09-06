@@ -23,13 +23,13 @@ namespace Sound_Engine.Controls
 	public partial class SoundControl : UserControl
 	{
 		public Sound sound { get; set; }
+		private Func<Task> Redraw { get; set; }
 
-		public SoundControl(Sound sound)
+		public SoundControl(Sound sound, Func<Task> redraw)
 		{
 			this.sound = sound;
 			InitializeComponent();
-
-
+			Redraw = redraw;
 		}
 
 		private void AfterInit(object sender, RoutedEventArgs e)
@@ -41,9 +41,10 @@ namespace Sound_Engine.Controls
 			}
 		}
 
-		private void FrequencySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		private async void FrequencySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
 		{
 			sound.Frequency = ((Slider)sender).Value;
+			await Redraw();
 		}
 	}
 }
