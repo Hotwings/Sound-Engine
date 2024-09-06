@@ -40,10 +40,15 @@ namespace Sound_Engine
 			generator.sounds.Add(new SineWave(179, 0, 10, 1000));
 			generator.sounds.Add(new SineWave(182, 0, 10, 1000));
 			generator.sounds.Add(new SineWave(186, 0, 10, 1000));
-			
+
+			Sounds.Add(new SineWave(175, 0, 10, 1000));
+			Sounds.Add(new SineWave(179, 0, 10, 1000));
+			Sounds.Add(new SineWave(182, 0, 10, 1000));
+			Sounds.Add(new SineWave(186, 0, 10, 1000));
+
 			InitializeComponent();
 
-
+			
 
 
 		}

@@ -23,11 +23,18 @@ namespace Sound_Engine.Controls
 	public partial class SoundControl : UserControl
 	{
 		public Sound sound { get; set; }
+
 		public SoundControl()
 		{
 			InitializeComponent();
 
-			
+
+		}
+
+		private void AfterInit(object sender, RoutedEventArgs e)
+		{
+			if (sound != null)
+				texbox.Text = sound.Frequency.ToString();
 		}
 	}
 }

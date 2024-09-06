@@ -6,10 +6,11 @@
 		xmlns:local="clr-namespace:Sound_Engine"
 		xmlns:UserControls="clr-namespace:Sound_Engine.Controls"
 		xmlns:Sounds="clr-namespace:Sound_Generator.Sounds"
+		DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		mc:Ignorable="d"
 		Title="MainWindow" Height="450" Width="800" Loaded="AfterInitialized">
 	<Grid>
-		<ListView x:Name="SoundsContainer" Margin="50,50,0,50" Width="268" HorizontalAlignment="Left" ItemsSource="{Binding Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControls:SoundControl}}}" >
+		<ListView x:Name="SoundsContainer" Margin="50,50,0,50" Width="268" HorizontalAlignment="Left" ItemsSource="{Binding Sounds}" >
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<UserControls:SoundControl />
