@@ -4,22 +4,24 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:Sound_Engine"
+		xmlns:UserControls="clr-namespace:Sound_Engine.Controls"
+		xmlns:Sounds="clr-namespace:Sound_Generator.Sounds"
 		mc:Ignorable="d"
-		Title="MainWindow" Height="450" Width="800">
+		Title="MainWindow" Height="450" Width="800" Loaded="AfterInitialized">
 	<Grid>
-		<ListView Margin="50,50,0,50" Width="268" HorizontalAlignment="Left">
-			<ListView.View>
-				<GridView>
-					<GridViewColumn/>
-				</GridView>
-			</ListView.View>
+		<ListView x:Name="SoundsContainer" Margin="50,50,0,50" Width="268" HorizontalAlignment="Left" ItemsSource="{Binding Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControls:SoundControl}}}" >
+			<ListView.ItemTemplate>
+				<DataTemplate>
+					<UserControls:SoundControl />
+				</DataTemplate>
+			</ListView.ItemTemplate>
 		</ListView>
-		<Grid x:Name="graphContainer" Margin="0,50,50,50" Width="350" HorizontalAlignment="Right">
-			<Grid.Effect>
-				<DropShadowEffect/>
-			</Grid.Effect>
+		<Grid x:Name="graphContainer" Margin="350,50,50,50">
 		</Grid>
 		<Button Content="+" Margin="0,0,8,150" HorizontalAlignment="Right" Width="20" Click="ZoomGraphY" MinWidth="20" MinHeight="20" Height="20"/>
 		<Button Content="-" Margin="0,150,8,0" HorizontalAlignment="Right" Width="20" Click="ZoomGraphY" MinWidth="20" MinHeight="20" Height="20"/>
+		<Button Content="+" Margin="0,0,140,25" HorizontalAlignment="Right" Width="20" Click="ZoomGraphX" MinWidth="20" MinHeight="20" Height="20" VerticalAlignment="Bottom"/>
+		<Button Content="-" Margin="0,0,305,25" HorizontalAlignment="Right" Width="20" Click="ZoomGraphX" MinWidth="20" MinHeight="20" Height="20" VerticalAlignment="Bottom"/>
+		
 	</Grid>
 </Window>

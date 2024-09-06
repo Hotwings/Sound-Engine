@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.IO;
+using Sound_Generator.Sounds;
 
 namespace Sound_Generator
 {
@@ -12,11 +14,12 @@ namespace Sound_Generator
 		const int formatChunkSize = 16;
 		const int headerSize = 8;
 		const short compressionType = 1;
-		const short channels = 1;
-		public const int samplesPerSecond = 44100;
 		const short bitsPerSample = 16;
 
-		public short[] WaveForm { get; private set; }
+
+		public short channels { get; private set; } = 1;
+		public int samplesPerSecond { get; private set; } = 44100;
+
 
 		public int Samples
 		{
@@ -34,20 +37,24 @@ namespace Sound_Generator
 			}
 		}
 
-		private readonly List<Sound> sounds = [];
+		public readonly List<Sound> sounds = [];
+		public short[] WaveForm { get; private set; } = [];
 
 
 		public SoundGenerator()
 		{
-			sounds.Add(new Sound(WaveType.Sine, 175, 0, 10, 1000));
-			sounds.Add(new Sound(WaveType.Sine, 179, 0, 10, 1000));
-			sounds.Add(new Sound(WaveType.Sine, 182, 0, 10, 1000));
-			sounds.Add(new Sound(WaveType.Sine, 186, 0, 10, 1000));
+
 		}
+		public SoundGenerator(short channels, int samplesPerSecond)
+		{
+			this.channels = channels;
+			this.samplesPerSecond = samplesPerSecond;
+		}
+
 
 		public short GetAmplitudeForSample(int sample)
 		{
-			return (short)sounds.Sum(x => x.Generate(sample)); ;
+			return (short)sounds.Sum(x => x.Generate(sample, this)); ;
 		}
 
 		public async Task GenerateWaveForm()
@@ -59,18 +66,31 @@ namespace Sound_Generator
 			{
 				tasks.Add(Task.Factory.StartNew((object? sample) =>
 				{
-					WaveForm[(int)sample] = GetAmplitudeForSample((int)sample);
+					if (sample != null)//Not nessecary but it gets rid of a warning
+						WaveForm[(int)sample] = GetAmplitudeForSample((int)sample);
 				}, state: i));
 
 			}
 			await Task.WhenAll(tasks);
 		}
 
+		public void SaveWavFile(string filename)
+		{
+			using FileStream fileStream = new("sound.wav", FileMode.Create);
+
+			GenerateWavFile(fileStream);
+
+		}
+
+		/// <summary>
+		/// WARNING!!! You are responsible for closing your own stream.
+		/// </summary>
+		/// <param name="stream">Stream to write the file to. Sets the stream's position to 0 and leaves it open.</param>
 		public void GenerateWavFile(Stream stream)
 		{
 			using BinaryWriter writer = new(stream, System.Text.Encoding.UTF8, true);
 
-			short frameSize = channels * ((bitsPerSample + 7) / 8);
+			short frameSize = (short)(channels * ((bitsPerSample + 7) / 8));
 			int bytesPerSecond = samplesPerSecond * frameSize;
 			int dataChunkSize = Samples * frameSize;
 			int fileSize = waveSize + headerSize + formatChunkSize + headerSize + dataChunkSize;

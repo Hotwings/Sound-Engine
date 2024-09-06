@@ -1,7 +1,10 @@
 ﻿using Sound_Generator;
+using Sound_Generator.Sounds;
 
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Media;
+using System.Security.AccessControl;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,11 +23,24 @@ namespace Sound_Engine
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private int graphYZoomLevel = 10;
-		private int graphXZoomLevel = 50;
-		SoundGenerator generator = new();
+		private int graphYZoomLevel = 30;
+		private double graphXZoomLevel = 40;
+		private int graphScroll = 0;
+
+
+		SoundGenerator generator;
+
+		public ObservableCollection<Sound> Sounds { get; set; } = [];
+
+
 		public MainWindow()
 		{
+			generator = new();
+			generator.sounds.Add(new SineWave(175, 0, 10, 1000));
+			generator.sounds.Add(new SineWave(179, 0, 10, 1000));
+			generator.sounds.Add(new SineWave(182, 0, 10, 1000));
+			generator.sounds.Add(new SineWave(186, 0, 10, 1000));
+			
 			InitializeComponent();
 
 
@@ -41,23 +57,34 @@ namespace Sound_Engine
 
 
 			await generator.GenerateWaveForm();
-
-			DrawWaveForm();
+			SoundsContainer.ItemsSource = generator.sounds;
 
 			generator.GenerateWavFile(stream);
-			FileStream fileStream = new("sound.wav", FileMode.Create);
-			stream.CopyTo(fileStream);
-			stream.Position = 0;
+			generator.SaveWavFile("Sound.wav");
 
 			using SoundPlayer player = new(stream);
 			player.Play();
 		}
-
-		private Point GetPointForGraph(short[] waveForm, int x)
+		
+		private void AfterInitialized(object sender, RoutedEventArgs e)
 		{
-			return new Point(x, waveForm[x * graphXZoomLevel] / graphYZoomLevel + 100);
+
+			DrawWaveForm();
 		}
 
+		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+		{
+			base.OnRenderSizeChanged(sizeInfo);
+			DrawWaveForm();
+		}
+
+		protected override void OnMouseWheel(MouseWheelEventArgs e)
+		{
+			graphScroll = Math.Max(0, graphScroll + e.Delta);
+			DrawWaveForm();
+		}
+
+		#region Graph
 		private void DrawWaveForm()
 		{
 			graphContainer.Children.Clear();
@@ -75,7 +102,7 @@ namespace Sound_Engine
 
 
 			PointCollection points = [];
-			for (int i = 1; i < 500; i++)
+			for (int i = 1; i < graphContainer.ActualWidth * graphXZoomLevel; i++)
 			{
 				points.Add(GetPointForGraph(generator.WaveForm, i));
 			}
@@ -93,19 +120,36 @@ namespace Sound_Engine
 
 			PathGeometry myPathGeometry = new()
 			{
-				Figures = myPathFigureCollection
+				Figures = myPathFigureCollection,
+				Transform = new ScaleTransform(1 / graphXZoomLevel, 1)
 			};
+
+
 
 			path.Data = myPathGeometry;
 			graphContainer.Children.Add(path);
 		}
 
+		private Point GetPointForGraph(short[] waveForm, int x)
+		{
+			return new Point(x, waveForm[x+graphScroll] / graphYZoomLevel + 150);
+		}
+
 
 		private void ZoomGraphY(object sender, RoutedEventArgs e)
 		{
-			graphYZoomLevel += (((Button)sender).Content.ToString() == "+") ? 1 : -1;
+			graphYZoomLevel += (((Button)sender).Content.ToString() == "-") ? 1 : -1;
 
 			DrawWaveForm();
 		}
+		private void ZoomGraphX(object sender, RoutedEventArgs e)
+		{
+			graphXZoomLevel += (((Button)sender).Content.ToString() == "-") ? 1 : -1;
+
+			DrawWaveForm();
+		}
+
+		#endregion
+
 	}
 }
