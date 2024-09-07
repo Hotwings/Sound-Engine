@@ -1,7 +1,7 @@
 ﻿using Sound_Engine.Controls;
 
-using Sound_Generator;
-using Sound_Generator.Sounds;
+using Sound_Engine_Library;
+using Sound_Engine_Library.Sounds;
 
 using System.Collections.ObjectModel;
 using System.IO;
@@ -50,15 +50,14 @@ namespace Sound_Engine
 			base.OnInitialized(e);
 
 
-			using MemoryStream stream = new();
+			;
 
 
 			await generator.GenerateWaveForm();
 
-			generator.GenerateWavFile(stream);
+			generator.WriteWavFileToStream();
 			//generator.SaveWavFile("Sound.wav");
-			player.Stop();
-			player.Stream = stream;
+			player.Stream = generator.Stream;
 			player.PlayLooping();
 		}
 
@@ -81,15 +80,17 @@ namespace Sound_Engine
 
 		private async Task RecreateWaveForm()
 		{
-			using MemoryStream stream = new();
 
 			await generator.GenerateWaveForm();
 
-			generator.GenerateWavFile(stream);
-			//generator.SaveWavFile("Sound.wav");
+			generator.WriteWavFileToStream();
+
 			player.Stop();
-			player.Stream = stream;
+			
+			player.Stream = generator.Stream;
+			player.Load();
 			player.PlayLooping();
+
 
 			DrawWaveForm();
 		}

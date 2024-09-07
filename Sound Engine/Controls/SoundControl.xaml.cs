@@ -1,4 +1,4 @@
-﻿using Sound_Generator.Sounds;
+﻿using Sound_Engine_Library.Sounds;
 
 using System;
 using System.Collections.Generic;
@@ -23,13 +23,13 @@ namespace Sound_Engine.Controls
 	public partial class SoundControl : UserControl
 	{
 		public Sound sound { get; set; }
-		private Func<Task> Redraw { get; set; }
+		private Func<Task> OnSoundChange { get; set; }
 
-		public SoundControl(Sound sound, Func<Task> redraw)
+		public SoundControl(Sound sound, Func<Task> onSoundChange)
 		{
 			this.sound = sound;
 			InitializeComponent();
-			Redraw = redraw;
+			OnSoundChange = onSoundChange;
 		}
 
 		private void AfterInit(object sender, RoutedEventArgs e)
@@ -44,7 +44,7 @@ namespace Sound_Engine.Controls
 		private async void FrequencySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
 		{
 			sound.Frequency = ((Slider)sender).Value;
-			await Redraw();
+			await OnSoundChange();
 		}
 	}
 }

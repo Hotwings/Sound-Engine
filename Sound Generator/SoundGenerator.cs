@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using Sound_Generator.Sounds;
+using Sound_Engine_Library.Sounds;
 
-namespace Sound_Generator
+namespace Sound_Engine_Library
 {
 	public class SoundGenerator
 	{
@@ -39,7 +39,7 @@ namespace Sound_Generator
 
 		public readonly List<Sound> sounds = [];
 		public short[] WaveForm { get; private set; } = [];
-
+		public MemoryStream Stream { get; set; } = new MemoryStream();
 
 		public SoundGenerator()
 		{
@@ -78,7 +78,7 @@ namespace Sound_Generator
 		{
 			using FileStream fileStream = new("sound.wav", FileMode.Create);
 
-			GenerateWavFile(fileStream);
+			WriteWavFileToStream(fileStream);
 
 		}
 
@@ -86,8 +86,11 @@ namespace Sound_Generator
 		/// WARNING!!! You are responsible for closing your own stream.
 		/// </summary>
 		/// <param name="stream">Stream to write the file to. Sets the stream's position to 0 and leaves it open.</param>
-		public void GenerateWavFile(Stream stream)
+		public void WriteWavFileToStream(Stream? stream = null, short[]? waveForm = null)
 		{
+			stream ??= Stream;
+			waveForm ??= WaveForm;
+
 			using BinaryWriter writer = new(stream, System.Text.Encoding.UTF8, true);
 
 			short frameSize = (short)(channels * ((bitsPerSample + 7) / 8));
@@ -110,7 +113,7 @@ namespace Sound_Generator
 			writer.Write(DATA);
 			writer.Write(dataChunkSize);
 
-			foreach (short value in WaveForm)
+			foreach (short value in waveForm)
 			{
 				writer.Write(value);
 			}

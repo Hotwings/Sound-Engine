@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sound_Generator.Sounds
+namespace Sound_Engine_Library.Sounds
 {
 	public abstract class Sound
 	{

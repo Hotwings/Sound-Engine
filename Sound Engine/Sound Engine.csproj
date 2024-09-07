@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sound Generator\Sound Generator.csproj" />
+    <ProjectReference Include="..\Sound Generator\Sound Engine Library.csproj" />
   </ItemGroup>
 
 </Project>
